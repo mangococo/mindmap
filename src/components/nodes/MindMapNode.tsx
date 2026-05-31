@@ -63,9 +63,12 @@ function MindMapNodeComponent({ id, data, selected }: NodeProps<Node<MindMapNode
       whileTap={{ scale: 0.98 }}
     >
       <NodeShape
-        shape={data.style?.borderStyle === 'capsule' ? 'capsule' : 'rounded'}
+        shape={data.style?.borderStyle || 'rounded'}
         isSelected={!!selected}
         isRoot={data.level === 0}
+        styleBackground={data.style?.background}
+        styleColor={data.style?.color}
+        showBorder={data.style?.showBorder ?? true}
       >
         {isEditing ? (
           <NodeEditor
