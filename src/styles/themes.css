@@ -1,0 +1,144 @@
+/* ============================================================
+   MindMap Theme System
+   Theme switching: document.documentElement.dataset.theme = 'ocean'
+   ============================================================ */
+
+/* Smooth theme transitions */
+*,
+*::before,
+*::after {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* ----------------------------------------------------------
+   1. Classic — Default professional look
+   ---------------------------------------------------------- */
+:root,
+[data-theme="classic"] {
+  --mm-bg: #F9FAFB;
+  --mm-bg-pattern: #E5E7EB;
+  --mm-node-bg: #FFFFFF;
+  --mm-node-text: #111827;
+  --mm-node-border: #D1D5DB;
+  --mm-root-bg: #3B82F6;
+  --mm-root-text: #FFFFFF;
+  --mm-edge: #94A3B8;
+  --mm-branch-1: #3B82F6;
+  --mm-branch-2: #10B981;
+  --mm-branch-3: #F59E0B;
+  --mm-branch-4: #8B5CF6;
+  --mm-branch-5: #EF4444;
+  --mm-branch-6: #06B6D4;
+  --mm-selection: #3B82F6;
+  --mm-toolbar-bg: rgba(255, 255, 255, 0.85);
+}
+
+/* ----------------------------------------------------------
+   2. Ocean — Cool blue-teal palette
+   ---------------------------------------------------------- */
+[data-theme="ocean"] {
+  --mm-bg: #F0F9FF;
+  --mm-bg-pattern: #BAE6FD;
+  --mm-node-bg: #FFFFFF;
+  --mm-node-text: #0C4A6E;
+  --mm-node-border: #7DD3FC;
+  --mm-root-bg: #0284C7;
+  --mm-root-text: #FFFFFF;
+  --mm-edge: #38BDF8;
+  --mm-branch-1: #0284C7;
+  --mm-branch-2: #06B6D4;
+  --mm-branch-3: #14B8A6;
+  --mm-branch-4: #0EA5E9;
+  --mm-branch-5: #22D3EE;
+  --mm-branch-6: #2DD4BF;
+  --mm-selection: #0284C7;
+  --mm-toolbar-bg: rgba(240, 249, 255, 0.85);
+}
+
+/* ----------------------------------------------------------
+   3. Forest — Green nature palette
+   ---------------------------------------------------------- */
+[data-theme="forest"] {
+  --mm-bg: #F0FDF4;
+  --mm-bg-pattern: #BBF7D0;
+  --mm-node-bg: #FFFFFF;
+  --mm-node-text: #14532D;
+  --mm-node-border: #86EFAC;
+  --mm-root-bg: #16A34A;
+  --mm-root-text: #FFFFFF;
+  --mm-edge: #4ADE80;
+  --mm-branch-1: #16A34A;
+  --mm-branch-2: #65A30D;
+  --mm-branch-3: #059669;
+  --mm-branch-4: #84CC16;
+  --mm-branch-5: #34D399;
+  --mm-branch-6: #A3E635;
+  --mm-selection: #16A34A;
+  --mm-toolbar-bg: rgba(240, 253, 244, 0.85);
+}
+
+/* ----------------------------------------------------------
+   4. Sunset — Warm orange-red palette
+   ---------------------------------------------------------- */
+[data-theme="sunset"] {
+  --mm-bg: #FFF7ED;
+  --mm-bg-pattern: #FED7AA;
+  --mm-node-bg: #FFFFFF;
+  --mm-node-text: #7C2D12;
+  --mm-node-border: #FDBA74;
+  --mm-root-bg: #EA580C;
+  --mm-root-text: #FFFFFF;
+  --mm-edge: #FB923C;
+  --mm-branch-1: #EA580C;
+  --mm-branch-2: #D97706;
+  --mm-branch-3: #DC2626;
+  --mm-branch-4: #F59E0B;
+  --mm-branch-5: #E11D48;
+  --mm-branch-6: #F97316;
+  --mm-selection: #EA580C;
+  --mm-toolbar-bg: rgba(255, 247, 237, 0.85);
+}
+
+/* ----------------------------------------------------------
+   5. Midnight — Dark mode theme
+   ---------------------------------------------------------- */
+[data-theme="midnight"] {
+  --mm-bg: #0F172A;
+  --mm-bg-pattern: #1E293B;
+  --mm-node-bg: #1E293B;
+  --mm-node-text: #E2E8F0;
+  --mm-node-border: #334155;
+  --mm-root-bg: #6366F1;
+  --mm-root-text: #FFFFFF;
+  --mm-edge: #475569;
+  --mm-branch-1: #6366F1;
+  --mm-branch-2: #8B5CF6;
+  --mm-branch-3: #A855F7;
+  --mm-branch-4: #EC4899;
+  --mm-branch-5: #F43F5E;
+  --mm-branch-6: #0EA5E9;
+  --mm-selection: #6366F1;
+  --mm-toolbar-bg: rgba(30, 41, 59, 0.85);
+}
+
+/* ----------------------------------------------------------
+   6. Minimal — Black and white, clean
+   ---------------------------------------------------------- */
+[data-theme="minimal"] {
+  --mm-bg: #FFFFFF;
+  --mm-bg-pattern: #F3F4F6;
+  --mm-node-bg: transparent;
+  --mm-node-text: #111827;
+  --mm-node-border: #D1D5DB;
+  --mm-root-bg: #111827;
+  --mm-root-text: #FFFFFF;
+  --mm-edge: #9CA3AF;
+  --mm-branch-1: #6B7280;
+  --mm-branch-2: #6B7280;
+  --mm-branch-3: #6B7280;
+  --mm-branch-4: #6B7280;
+  --mm-branch-5: #6B7280;
+  --mm-branch-6: #6B7280;
+  --mm-selection: #111827;
+  --mm-toolbar-bg: rgba(255, 255, 255, 0.85);
+}
