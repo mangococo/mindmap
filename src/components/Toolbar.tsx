@@ -39,7 +39,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-[calc(100vw-2rem)] rounded-2xl"
       style={{ background: 'var(--mm-toolbar-bg)', backdropFilter: 'blur(12px)', border: '1px solid var(--mm-node-border)' }}
     >
-      <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-2xl shadow-lg overflow-x-auto">
+      <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-2xl shadow-lg">
         <ToolButton onClick={onNew} icon={<Plus size={18} />} label="新建" primary />
         <ToolButton onClick={onOpen} icon={<FolderOpen size={18} />} label="打开" />
         <ToolButton onClick={onSave} icon={<Save size={18} />} label="保存" />
