@@ -142,3 +142,13 @@
   --mm-selection: #111827;
   --mm-toolbar-bg: rgba(255, 255, 255, 0.85);
 }
+
+/* Selection pulse animation */
+@keyframes selection-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+}
+
+.animate-selection-pulse {
+  animation: selection-pulse 2s ease-in-out infinite;
+}

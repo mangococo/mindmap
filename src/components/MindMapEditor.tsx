@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -7,14 +7,17 @@ import {
   BackgroundVariant,
   useNodesState,
   useEdgesState,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { AnimatePresence } from 'framer-motion';
 
-import type { MindMapData } from '../lib/types';
+import type { MindMapData, MindMapNode as MindMapNodeType, NodeStyle } from '../lib/types';
 import { computeLayout } from '../lib/layout';
 import type { LayoutAlgorithm } from '../lib/layout/types';
 import { MindMapNode } from './nodes/MindMapNode';
 import { AnimatedEdge } from './edges/AnimatedEdge';
+import { ContextToolbar } from './ContextToolbar';
 import { useMindMapStore } from '../store/mindmapStore';
 
 const nodeTypes = { mindmap: MindMapNode };
@@ -25,18 +28,31 @@ const defaultEdgeOptions = {
   animated: false,
 };
 
+function findNodeInTree(node: MindMapNodeType, id: string): MindMapNodeType | null {
+  if (node.id === id) return node;
+  if (node.children) {
+    for (const child of node.children) {
+      const found = findNodeInTree(child, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 interface MindMapEditorProps {
   data: MindMapData;
   layoutAlgorithm?: LayoutAlgorithm;
-  onNodeClick?: (id: string) => void;
+  zenMode?: boolean;
 }
 
 export const MindMapEditor: React.FC<MindMapEditorProps> = ({
   data,
   layoutAlgorithm = 'horizontal',
+  zenMode = false,
 }) => {
-  const { updateNode, addChild, deleteNode, toggleNodeExpanded, updateNodeData } = useMindMapStore();
-  const selectedNodeId = useRef<string | null>(null);
+  const { updateNode, addChild, deleteNode, toggleNodeExpanded, updateNodeData, updateBranchColor } = useMindMapStore();
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const selectedNodeIdRef = useRef<string | null>(null);
 
   const layout = useMemo(
     () => computeLayout(data.root, { algorithm: layoutAlgorithm }),
@@ -51,15 +67,20 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
     setEdges(layout.edges);
   }, [layout, setNodes, setEdges]);
 
-  const onNodeClick = useCallback((_: React.MouseEvent, node: { id: string }) => {
-    selectedNodeId.current = node.id;
+  // Sync ref with state for event handlers
+  useEffect(() => {
+    selectedNodeIdRef.current = selectedNodeId;
+  }, [selectedNodeId]);
+
+  const handleNodeClick = useCallback((_: React.MouseEvent, node: { id: string }) => {
+    setSelectedNodeId(node.id);
   }, []);
 
-  const onPaneClick = useCallback(() => {
-    selectedNodeId.current = null;
+  const handlePaneClick = useCallback(() => {
+    setSelectedNodeId(null);
   }, []);
 
-  // Listen for custom DOM events from MindMapNode components
+  // DOM events from MindMapNode components
   useEffect(() => {
     const handleUpdateNode = (e: Event) => {
       const { id, text } = (e as CustomEvent).detail;
@@ -91,15 +112,16 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
       const tag = (document.activeElement?.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea') return;
 
-      if (e.key === 'Tab' && selectedNodeId.current) {
+      const sid = selectedNodeIdRef.current;
+      if (e.key === 'Tab' && sid) {
         e.preventDefault();
         const newNodeId = `new-${Date.now()}`;
-        addChild(selectedNodeId.current, newNodeId);
+        addChild(sid, newNodeId);
       }
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNodeId.current) {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && sid) {
         e.preventDefault();
-        deleteNode(selectedNodeId.current);
-        selectedNodeId.current = null;
+        deleteNode(sid);
+        setSelectedNodeId(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -109,7 +131,7 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
   // Image paste
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
-      if (!selectedNodeId.current) return;
+      if (!selectedNodeIdRef.current) return;
       const items = e.clipboardData?.items;
       if (!items) return;
       for (const item of items) {
@@ -129,7 +151,7 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
                 w *= ratio;
                 h *= ratio;
               }
-              updateNodeData(selectedNodeId.current!, { image: base64, imageSize: { width: w, height: h } });
+              updateNodeData(selectedNodeIdRef.current!, { image: base64, imageSize: { width: w, height: h } });
             };
             img.src = base64;
           };
@@ -152,8 +174,8 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
-        onNodeClick={onNodeClick}
-        onPaneClick={onPaneClick}
+        onNodeClick={handleNodeClick}
+        onPaneClick={handlePaneClick}
         fitView
         fitViewOptions={{ padding: 0.3 }}
         minZoom={0.1}
@@ -164,16 +186,80 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
         proOptions={{ hideAttribution: true }}
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="var(--mm-bg-pattern)" />
-        <MiniMap
-          nodeColor={() => 'var(--mm-branch-1)'}
-          maskColor="rgba(0,0,0,0.1)"
-          style={{ background: 'var(--mm-bg)', border: '1px solid var(--mm-node-border)' }}
-        />
-        <Controls
-          showInteractive={false}
-          style={{ background: 'var(--mm-toolbar-bg)', border: '1px solid var(--mm-node-border)' }}
-        />
+        {!zenMode && (
+          <>
+            <MiniMap
+              nodeColor={() => 'var(--mm-branch-1)'}
+              maskColor="rgba(0,0,0,0.1)"
+              style={{ background: 'var(--mm-bg)', border: '1px solid var(--mm-node-border)' }}
+            />
+            <Controls
+              showInteractive={false}
+              style={{ background: 'var(--mm-toolbar-bg)', border: '1px solid var(--mm-node-border)' }}
+            />
+          </>
+        )}
       </ReactFlow>
+
+      {/* ContextToolbar for selected node */}
+      <ContextToolbarOverlay
+        selectedNodeId={selectedNodeId}
+        nodes={nodes}
+        dataRoot={data.root}
+        onUpdateStyle={(id, style) => {
+          const tree = findNodeInTree(data.root, id);
+          updateNodeData(id, { style: { ...tree?.style, ...style } });
+        }}
+        onUpdateData={updateNodeData}
+        onDelete={(id) => { deleteNode(id); setSelectedNodeId(null); }}
+        onUpdateBranchColor={updateBranchColor}
+      />
     </div>
+  );
+};
+
+interface ContextToolbarOverlayProps {
+  selectedNodeId: string | null;
+  nodes: any[];
+  dataRoot: MindMapNodeType;
+  onUpdateStyle: (id: string, style: NodeStyle) => void;
+  onUpdateData: (id: string, data: Partial<MindMapNodeType>) => void;
+  onDelete: (id: string) => void;
+  onUpdateBranchColor: (branchId: string, color: string) => void;
+}
+
+const ContextToolbarOverlay: React.FC<ContextToolbarOverlayProps> = ({
+  selectedNodeId, nodes, dataRoot,
+  onUpdateStyle, onUpdateData, onDelete, onUpdateBranchColor,
+}) => {
+  const { flowToScreenPosition } = useReactFlow();
+
+  const selectedNode = selectedNodeId
+    ? nodes.find(n => n.id === selectedNodeId)
+    : null;
+
+  const treeNode = selectedNodeId
+    ? findNodeInTree(dataRoot, selectedNodeId)
+    : null;
+
+  if (!selectedNode || !treeNode) return null;
+
+  const nodeWidth = (selectedNode as any).measured?.width || (selectedNode as any).width || 120;
+  const screenPos = flowToScreenPosition({
+    x: selectedNode.position.x + nodeWidth / 2,
+    y: selectedNode.position.y,
+  });
+
+  return (
+    <AnimatePresence>
+      <ContextToolbar
+        node={treeNode}
+        position={{ x: screenPos.x, y: screenPos.y - 50 }}
+        onUpdateStyle={onUpdateStyle}
+        onUpdateData={onUpdateData}
+        onDelete={onDelete}
+        onUpdateBranchColor={onUpdateBranchColor}
+      />
+    </AnimatePresence>
   );
 };

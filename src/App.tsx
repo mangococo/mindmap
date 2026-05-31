@@ -22,6 +22,7 @@ function App() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>('classic');
   const [layoutAlgorithm, setLayoutAlgorithm] = useState<LayoutAlgorithm>('horizontal');
+  const [zenMode, setZenMode] = useState(false);
 
   const storage = getStorage();
 
@@ -74,19 +75,32 @@ function App() {
     setTheme(THEMES[(idx + 1) % THEMES.length]);
   };
 
+  // Esc to exit ZEN mode
+  useEffect(() => {
+    if (!zenMode) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setZenMode(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [zenMode]);
+
   return (
     <div className="h-screen flex flex-col" style={{ background: 'var(--mm-bg)', color: 'var(--mm-node-text)' }}>
-      <Toolbar
-        onOpen={() => setShowImportDialog(true)}
-        onSave={() => setShowExportDialog(true)}
-        onNew={() => setShowNewMindMapDialog(true)}
-        onHistory={() => setIsHistoryOpen(!isHistoryOpen)}
-        onClear={handleClear}
-        theme={theme}
-        onCycleTheme={cycleTheme}
-        layoutAlgorithm={layoutAlgorithm}
-        onLayoutChange={setLayoutAlgorithm}
-      />
+      {!zenMode && (
+        <Toolbar
+          onOpen={() => setShowImportDialog(true)}
+          onSave={() => setShowExportDialog(true)}
+          onNew={() => setShowNewMindMapDialog(true)}
+          onHistory={() => setIsHistoryOpen(!isHistoryOpen)}
+          onClear={handleClear}
+          theme={theme}
+          onCycleTheme={cycleTheme}
+          layoutAlgorithm={layoutAlgorithm}
+          onLayoutChange={setLayoutAlgorithm}
+          onZenMode={() => setZenMode(true)}
+        />
+      )}
 
       {isHistoryOpen && (
         <HistoryPanel
@@ -108,10 +122,20 @@ function App() {
               <MindMapEditor
                 data={data}
                 layoutAlgorithm={layoutAlgorithm}
+                zenMode={zenMode}
               />
             </ReactFlowProvider>
           )}
         </div>
+        {zenMode && (
+          <div
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full text-sm opacity-40 hover:opacity-80 transition-opacity cursor-pointer"
+            style={{ background: 'var(--mm-toolbar-bg)', backdropFilter: 'blur(8px)', color: 'var(--mm-node-text)' }}
+            onClick={() => setZenMode(false)}
+          >
+            按 Esc 退出沉浸模式
+          </div>
+        )}
       </div>
 
       <ImportDialog

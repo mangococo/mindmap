@@ -22,7 +22,7 @@ export function NodeShape({ shape = 'rounded', isSelected, isRoot, children }: N
     : 'bg-[var(--mm-node-bg)] text-[var(--mm-node-text)] shadow-md px-3 py-1.5 border border-[var(--mm-node-border)]';
 
   const selectedClasses = isSelected
-    ? 'ring-2 ring-[var(--mm-selection)] ring-offset-2'
+    ? 'ring-2 ring-[var(--mm-selection)] ring-offset-2 animate-selection-pulse'
     : '';
 
   const shapeClass = shapeClasses[shape] ?? shapeClasses.rounded;
@@ -35,6 +35,7 @@ export function NodeShape({ shape = 'rounded', isSelected, isRoot, children }: N
         shapeClass,
         'transition-all duration-200 relative',
       ].join(' ')}
+      style={{ transformOrigin: 'center' }}
     >
       {children}
     </div>

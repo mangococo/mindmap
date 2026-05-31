@@ -9,6 +9,7 @@ import { NodeHandles } from './NodeHandles';
 
 function MindMapNodeComponent({ id, data, selected }: NodeProps<Node<MindMapNodeData>>) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleDoubleClick = useCallback(() => {
     setIsEditing(true);
@@ -44,9 +45,15 @@ function MindMapNodeComponent({ id, data, selected }: NodeProps<Node<MindMapNode
     <motion.div
       className="relative cursor-pointer"
       initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      animate={{
+        scale: isHovered ? 1.03 : 1,
+        opacity: 1,
+      }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       onDoubleClick={handleDoubleClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      whileTap={{ scale: 0.98 }}
     >
       <NodeShape
         shape={data.style?.borderStyle === 'capsule' ? 'capsule' : 'rounded'}
