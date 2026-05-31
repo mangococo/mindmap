@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback, useEffect } from 'react';
 import type { NodeProps, Node } from '@xyflow/react';
 import { motion } from 'framer-motion';
 import type { MindMapNodeData } from '../../lib/layout/types';
@@ -11,9 +11,17 @@ function MindMapNodeComponent({ id, data, selected }: NodeProps<Node<MindMapNode
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleDoubleClick = useCallback(() => {
-    setIsEditing(true);
-  }, []);
+  // Listen for edit-node event dispatched from ReactFlow's onNodeDoubleClick
+  useEffect(() => {
+    const handleEditNode = (e: Event) => {
+      const { id: editId } = (e as CustomEvent).detail;
+      if (editId === id) {
+        setIsEditing(true);
+      }
+    };
+    document.addEventListener('mindmap:edit-node', handleEditNode);
+    return () => document.removeEventListener('mindmap:edit-node', handleEditNode);
+  }, [id]);
 
   const handleSave = useCallback(
     (text: string) => {
@@ -50,7 +58,6 @@ function MindMapNodeComponent({ id, data, selected }: NodeProps<Node<MindMapNode
         opacity: 1,
       }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      onDoubleClick={handleDoubleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       whileTap={{ scale: 0.98 }}

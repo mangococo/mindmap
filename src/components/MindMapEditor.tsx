@@ -80,6 +80,12 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
     setSelectedNodeId(null);
   }, []);
 
+  const handleNodeDoubleClick = useCallback((_: React.MouseEvent, node: { id: string }) => {
+    document.dispatchEvent(
+      new CustomEvent('mindmap:edit-node', { detail: { id: node.id } }),
+    );
+  }, []);
+
   // DOM events from MindMapNode components
   useEffect(() => {
     const handleUpdateNode = (e: Event) => {
@@ -175,6 +181,7 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         onNodeClick={handleNodeClick}
+        onNodeDoubleClick={handleNodeDoubleClick}
         onPaneClick={handlePaneClick}
         fitView
         fitViewOptions={{ padding: 0.3 }}
