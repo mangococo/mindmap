@@ -22,7 +22,7 @@ function calculateSize(
     return { width: 80, height: 80, totalHeight: 80 };
   }
   const fontSize = level === 0 ? 18 : 14;
-  const paddingX = level === 0 ? 32 : 16;
+  const paddingX = level === 0 ? 40 : 20;
   const textWidth = Math.max(node.text.length * fontSize * 0.7, 40);
   const width = textWidth + paddingX * 2;
   const height = level === 0 ? 60 : 24;
