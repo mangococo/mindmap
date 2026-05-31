@@ -123,24 +123,24 @@ export const ContextToolbar: React.FC<ContextToolbarProps> = ({
     >
       {/* Main toolbar */}
       <div
-        className="flex items-center gap-0.5 px-2 py-1.5 rounded-2xl shadow-xl"
+        className="flex items-center gap-1 px-2 py-1.5 rounded-2xl shadow-xl"
         style={{
           background: 'var(--mm-toolbar-bg)',
           backdropFilter: 'blur(12px)',
           border: '1px solid var(--mm-node-border)',
         }}
       >
-        <ToolBtn onClick={() => togglePanel('color')} icon={<Palette size={16} />} tooltip="颜色" active={activePanel === 'color'} />
-        <ToolBtn onClick={() => togglePanel('branch')} icon={<GitBranch size={16} />} tooltip="分支颜色" active={activePanel === 'branch'} />
+        <ToolBtn onClick={() => togglePanel('color')} icon={<Palette size={20} />} tooltip="颜色" active={activePanel === 'color'} />
+        <ToolBtn onClick={() => togglePanel('branch')} icon={<GitBranch size={20} />} tooltip="分支颜色" active={activePanel === 'branch'} />
         <Sep />
-        <ToolBtn onClick={handleToggleBorder} icon={<Square size={16} />} tooltip={currentShowBorder ? '隐藏边框' : '显示边框'} active={currentShowBorder} />
-        <ToolBtn onClick={() => togglePanel('border')} icon={<Layers size={16} />} tooltip="边框样式" active={activePanel === 'border'} />
+        <ToolBtn onClick={handleToggleBorder} icon={<Square size={20} />} tooltip={currentShowBorder ? '隐藏边框' : '显示边框'} active={currentShowBorder} />
+        <ToolBtn onClick={() => togglePanel('border')} icon={<Layers size={20} />} tooltip="边框样式" active={activePanel === 'border'} />
         <Sep />
-        <ToolBtn onClick={() => togglePanel('note')} icon={<StickyNote size={16} />} tooltip="备注" active={activePanel === 'note' || !!node.note} />
-        <ToolBtn onClick={handleImageUpload} icon={<ImageIcon size={16} />} tooltip="图片" active={!!node.image} />
+        <ToolBtn onClick={() => togglePanel('note')} icon={<StickyNote size={20} />} tooltip="备注" active={activePanel === 'note' || !!node.note} />
+        <ToolBtn onClick={handleImageUpload} icon={<ImageIcon size={20} />} tooltip="图片" active={!!node.image} />
         <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
         <Sep />
-        <ToolBtn onClick={() => onDelete(node.id)} icon={<Trash2 size={16} />} tooltip="删除" danger />
+        <ToolBtn onClick={() => onDelete(node.id)} icon={<Trash2 size={20} />} tooltip="删除" danger />
         {onClose && (
           <ToolBtn onClick={onClose} icon={<X size={14} />} tooltip="关闭" />
         )}
@@ -242,7 +242,7 @@ const Panel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const Sep = () => (
-  <div className="w-px h-4 mx-0.5 pointer-events-none" style={{ background: 'var(--mm-node-border)' }} />
+  <div className="w-px h-5 mx-1 pointer-events-none" style={{ background: 'var(--mm-node-border)' }} />
 );
 
 const ToolBtn = ({ onClick, icon, tooltip, danger, active }: {
@@ -254,7 +254,7 @@ const ToolBtn = ({ onClick, icon, tooltip, danger, active }: {
 }) => (
   <button
     onClick={(e) => { e.stopPropagation(); onClick(); }}
-    className={`p-1.5 rounded-lg transition-colors ${
+    className={`p-2 rounded-lg transition-colors ${
       danger ? 'text-red-400 hover:bg-red-500/20' :
       active ? 'text-blue-400 bg-blue-500/20' :
       'hover:bg-white/10'

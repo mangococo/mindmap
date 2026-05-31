@@ -36,10 +36,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const [showThemeMenu, setShowThemeMenu] = React.useState(false);
 
   return (
-    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-[calc(100vw-2rem)]"
+    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-[calc(100vw-2rem)] rounded-2xl"
       style={{ background: 'var(--mm-toolbar-bg)', backdropFilter: 'blur(12px)', border: '1px solid var(--mm-node-border)' }}
     >
-      <div className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 rounded-2xl shadow-lg overflow-x-auto">
+      <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-2xl shadow-lg overflow-x-auto">
         <ToolButton onClick={onNew} icon={<Plus size={18} />} label="新建" primary />
         <ToolButton onClick={onOpen} icon={<FolderOpen size={18} />} label="打开" />
         <ToolButton onClick={onSave} icon={<Save size={18} />} label="保存" />
@@ -115,7 +115,7 @@ interface ToolButtonProps {
 
 const ToolButton: React.FC<ToolButtonProps> = ({ onClick, icon, label, primary, danger }) => (
   <button onClick={onClick}
-    className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 min-h-[36px] ${
+    className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 min-h-[36px] ${
       primary ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30' :
       danger ? 'text-red-400 hover:bg-red-500/20' :
       'hover:bg-white/10'
