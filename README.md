@@ -1,0 +1,240 @@
+# 思维导图编辑器
+
+一个美观的纯前端思维导图编辑器，支持多种文件格式的导入和导出。
+
+## 功能特性
+
+### 核心功能
+- ✅ 创建和编辑思维导图
+- ✅ 添加、删除节点
+- ✅ 拖拽画布和节点
+- ✅ 缩放和平移
+- ✅ 浅色/深色主题切换
+
+### 文件格式支持
+
+#### 导入
+- ✅ **XMind** (.xmind) - 完整支持
+- ✅ **FreeMind** (.mm) - 兼容 MindNode 等其他软件
+
+#### 导出
+- ✅ **XMind** (.xmind) - 标准 XMind 格式
+- ✅ **JSON Canvas** (.canvas) - Obsidian Canvas 格式
+- ✅ **Markdown** (.md) - 层级 Markdown 格式
+
+## 技术栈
+
+- **框架**: React 18 + TypeScript
+- **构建工具**: Vite 5
+- **样式**: Tailwind CSS
+- **思维导图**: @ant-design/graphs
+- **文件处理**: JSZip, fast-xml-parser, file-saver
+- **状态管理**: Zustand
+
+## 快速开始
+
+### 安装依赖
+
+```bash
+npm install
+```
+
+### 启动开发服务器
+
+```bash
+npm run dev
+```
+
+应用将在 http://localhost:5173/ 启动
+
+### 构建生产版本
+
+```bash
+npm run build
+```
+
+构建产物将输出到 `dist/` 目录
+
+### 构建独立 HTML 文件
+
+如果需要将应用打包为一个独立的 HTML 文件（包含所有资源），可以手动创建：
+
+```bash
+# 1. 先构建生产版本
+npm run build
+
+# 2. 创建独立的 HTML 文件
+cat << 'EOF' > standalone.html
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>思维导图编辑器</title>
+    <style>
+EOF
+cat dist/assets/index-*.css >> standalone.html
+cat << 'EOF' >> standalone.html
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+EOF
+cat dist/assets/index-*.js >> standalone.html
+cat << 'EOF' >> standalone.html
+    </script>
+  </body>
+</html>
+EOF
+```
+
+生成的 `standalone.html` 文件（约 460KB）包含所有功能，可直接在浏览器中打开使用，无需服务器或网络连接。
+
+**特性：**
+- ✅ 所有 CSS 和 JavaScript 已内联
+- ✅ 无外部资源依赖
+- ✅ 可离线使用
+- ✅ 支持所有功能（思维导图编辑、导入/导出、主题切换等）
+
+## 使用指南
+
+### 基本操作
+
+1. **添加节点**
+   - 选中一个节点后，点击工具栏的"添加节点"按钮
+   - 新节点将添加为选中节点的子节点
+
+2. **删除节点**
+   - 选中要删除的节点，点击工具栏的"删除节点"按钮
+   - 注意：不能删除根节点
+
+3. **编辑节点**
+   - 双击节点，在弹出的对话框中修改文本
+   - 点击确定保存修改
+
+4. **导航画布**
+   - 按住鼠标左键拖拽画布
+   - 使用鼠标滚轮缩放
+
+5. **选择节点**
+   - 单击节点选中它
+
+### 导入文件
+
+1. 点击工具栏的"导入"按钮
+2. 选择支持的文件格式（.xmind 或 .mm）
+3. 拖拽文件到导入区域，或点击选择文件
+4. 文件将自动解析并显示
+
+### 导出文件
+
+1. 点击工具栏的"导出"按钮
+2. 选择导出格式：
+   - **XMind**: 标准 XMind 格式，可在 XMind 软件中打开
+   - **JSON Canvas**: Obsidian Canvas 格式
+   - **Markdown**: 层级 Markdown 格式，适合文档和笔记
+3. 输入文件名
+4. 点击"导出"按钮下载文件
+
+### 主题切换
+
+点击工具栏右侧的月亮/太阳图标可以切换深色/浅色主题。
+
+## 项目结构
+
+```
+src/
+├── components/         # React 组件
+│   ├── MindMapEditor.tsx    # 思维导图编辑器
+│   ├── Toolbar.tsx            # 工具栏
+│   ├── ImportDialog.tsx       # 导入对话框
+│   └── ExportDialog.tsx       # 导出对话框
+├── lib/
+│   ├── parsers/               # 文件解析器
+│   │   ├── xmind.ts         # XMind 解析
+│   │   └── freemind.ts      # FreeMind 解析
+│   ├── exporters/             # 文件导出器
+│   │   ├── xmind.ts         # XMind 导出
+│   │   ├── jsonCanvas.ts     # JSON Canvas 导出
+│   │   └── markdown.ts      # Markdown 导出
+│   ├── types.ts               # TypeScript 类型定义
+│   └── utils.ts              # 工具函数
+├── store/
+│   └── mindmapStore.ts       # Zustand 状态管理
+├── App.tsx                  # 主应用组件
+└── main.tsx                 # 应用入口
+```
+
+## 文件格式说明
+
+### XMind 格式
+XMind 文件实际上是 ZIP 压缩包，包含以下结构：
+```
+.xmind
+├── content/
+│   └── content.xml          # 主要内容
+├── styles/                  # 样式文件（可选）
+├── META-INF/
+│   └── manifest.xml         # 文件清单
+└── [Content_Types].xml     # 内容类型定义
+```
+
+### FreeMind 格式
+FreeMind 使用简单的 XML 结构：
+```xml
+<map version="1.0.1">
+  <node TEXT="中心主题">
+    <node TEXT="子主题1">
+      <node TEXT="详细内容"/>
+    </node>
+  </node>
+</map>
+```
+
+### JSON Canvas 格式
+JSON Canvas 是 Obsidian Canvas 使用的格式：
+```json
+{
+  "nodes": [
+    {
+      "id": "root",
+      "type": "text",
+      "text": "中心主题",
+      "x": 100,
+      "y": 100,
+      "width": 150,
+      "height": 50
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge1",
+      "fromNode": "root",
+      "toNode": "child1"
+    }
+  ]
+}
+```
+
+## 开发计划
+
+- [x] 项目初始化
+- [x] 基础编辑器实现
+- [x] XMind 导入/导出
+- [x] FreeMind 导入
+- [x] JSON Canvas 导出
+- [x] Markdown 导出
+- [x] UI/UX 优化
+- [x] 主题切换
+- [ ] 性能优化
+- [ ] 单元测试
+- [ ] 更多格式支持
+
+## 许可证
+
+MIT
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request！
