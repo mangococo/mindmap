@@ -1,5 +1,17 @@
 import React from 'react';
-import { FolderOpen, Save, Moon, Sun, History, Trash2, Plus } from 'lucide-react';
+import { FolderOpen, Save, History, Trash2, Plus, LayoutGrid, Palette } from 'lucide-react';
+import type { LayoutAlgorithm } from '../lib/layout/types';
+
+const THEMES = ['classic', 'ocean', 'forest', 'sunset', 'midnight', 'minimal'] as const;
+const THEME_LABELS: Record<string, string> = {
+  classic: '经典', ocean: '海洋', forest: '森林',
+  sunset: '日落', midnight: '暗夜', minimal: '极简',
+};
+const LAYOUT_LABELS: Record<LayoutAlgorithm, string> = {
+  horizontal: '向右树形',
+  radial: '中心放射',
+  balanced: '双向对称',
+};
 
 interface ToolbarProps {
   onOpen: () => void;
@@ -7,70 +19,80 @@ interface ToolbarProps {
   onNew: () => void;
   onHistory: () => void;
   onClear: () => void;
-  isDarkMode: boolean;
-  onToggleTheme: () => void;
+  theme: string;
+  onCycleTheme: () => void;
+  layoutAlgorithm: LayoutAlgorithm;
+  onLayoutChange: (layout: LayoutAlgorithm) => void;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
-  onOpen,
-  onSave,
-  onNew,
-  onHistory,
-  onClear,
-  isDarkMode,
-  onToggleTheme,
+  onOpen, onSave, onNew, onHistory, onClear,
+  theme, onCycleTheme,
+  layoutAlgorithm, onLayoutChange,
 }) => {
+  const [showLayoutMenu, setShowLayoutMenu] = React.useState(false);
+  const [showThemeMenu, setShowThemeMenu] = React.useState(false);
+
   return (
-    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl rounded-2xl px-5 py-3.5 flex items-center gap-5 z-50 transition-all duration-300">
-      <div className="flex items-center gap-2">
-        <ToolButton
-          onClick={onNew}
-          icon={<Plus size={20} />}
-          label="新建"
-          primary
-        />
-        <ToolButton
-          onClick={onOpen}
-          icon={<FolderOpen size={20} />}
-          label="打开"
-        />
-        <ToolButton
-          onClick={onSave}
-          icon={<Save size={20} />}
-          label="保存"
-        />
+    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50"
+      style={{ background: 'var(--mm-toolbar-bg)', backdropFilter: 'blur(12px)', border: '1px solid var(--mm-node-border)' }}
+    >
+      <div className="flex items-center gap-1 px-3 py-2 rounded-2xl shadow-lg">
+        <ToolButton onClick={onNew} icon={<Plus size={18} />} label="新建" primary />
+        <ToolButton onClick={onOpen} icon={<FolderOpen size={18} />} label="打开" />
+        <ToolButton onClick={onSave} icon={<Save size={18} />} label="保存" />
+        <Divider />
+        <div className="relative">
+          <ToolButton
+            onClick={() => { setShowLayoutMenu(!showLayoutMenu); setShowThemeMenu(false); }}
+            icon={<LayoutGrid size={18} />}
+            label={LAYOUT_LABELS[layoutAlgorithm]}
+          />
+          {showLayoutMenu && (
+            <div className="absolute top-full mt-2 left-0 p-1 rounded-xl shadow-xl min-w-[140px]"
+              style={{ background: 'var(--mm-toolbar-bg)', backdropFilter: 'blur(12px)', border: '1px solid var(--mm-node-border)' }}
+            >
+              {(Object.keys(LAYOUT_LABELS) as LayoutAlgorithm[]).map(l => (
+                <button key={l} onClick={() => { onLayoutChange(l); setShowLayoutMenu(false); }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm ${layoutAlgorithm === l ? 'bg-blue-500/20 text-blue-400' : 'hover:bg-white/10'}`}
+                >
+                  {LAYOUT_LABELS[l]}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="relative">
+          <ToolButton
+            onClick={() => { setShowThemeMenu(!showThemeMenu); setShowLayoutMenu(false); }}
+            icon={<Palette size={18} />}
+            label={THEME_LABELS[theme] || '主题'}
+          />
+          {showThemeMenu && (
+            <div className="absolute top-full mt-2 left-0 p-2 rounded-xl shadow-xl flex gap-1.5"
+              style={{ background: 'var(--mm-toolbar-bg)', backdropFilter: 'blur(12px)', border: '1px solid var(--mm-node-border)' }}
+            >
+              {THEMES.map(t => (
+                <button key={t} onClick={() => { onCycleTheme(); /* caller handles actual set */ setShowThemeMenu(false); }}
+                  className={`w-7 h-7 rounded-full border-2 transition-transform hover:scale-110 ${theme === t ? 'border-blue-400 scale-110' : 'border-transparent'}`}
+                  style={{ background: `var(--mm-root-bg)` }}
+                  title={THEME_LABELS[t]}
+                  data-theme-preview={t}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+        <Divider />
+        <ToolButton onClick={onHistory} icon={<History size={18} />} label="历史" />
+        <ToolButton onClick={onClear} icon={<Trash2 size={18} />} label="清空" danger />
       </div>
-
-      <Divider />
-
-      <ToolButton
-        onClick={onHistory}
-        icon={<History size={20} />}
-        label="历史记录"
-      />
-
-      <ToolButton
-        onClick={onClear}
-        icon={<Trash2 size={20} />}
-        label="清空"
-        danger
-      />
-
-      <Divider />
-
-      <button
-        onClick={onToggleTheme}
-        className="p-2.5 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-        title={isDarkMode ? "切换到浅色模式" : "切换到深色模式"}
-      >
-        {isDarkMode ? <Sun size={22} /> : <Moon size={22} />}
-      </button>
     </div>
   );
 };
 
 const Divider = () => (
-  <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
+  <div className="w-px h-5 mx-1" style={{ background: 'var(--mm-node-border)' }} />
 );
 
 interface ToolButtonProps {
@@ -81,22 +103,16 @@ interface ToolButtonProps {
   danger?: boolean;
 }
 
-const ToolButton: React.FC<ToolButtonProps> = ({ onClick, icon, label, primary, danger }) => {
-  let baseClasses = "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200";
-  let colorClasses = "";
-
-  if (primary) {
-    colorClasses = "bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50";
-  } else if (danger) {
-    colorClasses = "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30";
-  } else {
-    colorClasses = "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700";
-  }
-
-  return (
-    <button onClick={onClick} className={`${baseClasses} ${colorClasses}`} title={label}>
-      {icon}
-      <span className="hidden sm:inline">{label}</span>
-    </button>
-  );
-};
+const ToolButton: React.FC<ToolButtonProps> = ({ onClick, icon, label, primary, danger }) => (
+  <button onClick={onClick}
+    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+      primary ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30' :
+      danger ? 'text-red-400 hover:bg-red-500/20' :
+      'hover:bg-white/10'
+    }`}
+    title={label}
+  >
+    {icon}
+    <span className="hidden sm:inline">{label}</span>
+  </button>
+);

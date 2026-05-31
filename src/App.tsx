@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ReactFlowProvider } from '@xyflow/react';
 import { MindMapEditor } from './components/MindMapEditor';
 import { Toolbar } from './components/Toolbar';
 import { ImportDialog } from './components/ImportDialog';
@@ -7,24 +8,26 @@ import { HistoryPanel } from './components/HistoryPanel';
 import { NewMindMapDialog } from './components/NewMindMapDialog';
 import { useMindMapStore } from './store/mindmapStore';
 import { getStorage } from './lib/storage';
+import type { LayoutAlgorithm } from './lib/layout/types';
+import './styles/themes.css';
+
+const THEMES = ['classic', 'ocean', 'forest', 'sunset', 'midnight', 'minimal'] as const;
+type Theme = typeof THEMES[number];
 
 function App() {
-  const { data, setData, addChild, updateNode, updateNodeData, deleteNode, toggleNodeExpanded, updateBranchColor, clear } = useMindMapStore();
+  const { data, setData, clear } = useMindMapStore();
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showNewMindMapDialog, setShowNewMindMapDialog] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [theme, setTheme] = useState<Theme>('classic');
+  const [layoutAlgorithm, setLayoutAlgorithm] = useState<LayoutAlgorithm>('horizontal');
 
   const storage = getStorage();
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   useEffect(() => {
     const loadSavedMindMap = async () => {
@@ -41,7 +44,6 @@ function App() {
       const timeout = setTimeout(() => {
         storage.saveCurrentMindMap(data);
       }, 1000);
-
       return () => clearTimeout(timeout);
     }
   }, [data, storage]);
@@ -52,31 +54,11 @@ function App() {
     setShowImportDialog(false);
   };
 
-  const handleOpen = () => {
-    setShowImportDialog(true);
-  };
-
-  const handleSave = () => {
-    setShowExportDialog(true);
-  };
-
-  const handleHistory = async () => {
-    setIsHistoryOpen(!isHistoryOpen);
-  };
-
-  const handleToggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
   const handleClear = () => {
     if (window.confirm('确定要清空画布吗？此操作不可撤销。')) {
       clear();
       storage.clearCurrentMindMap();
     }
-  };
-
-  const handleNew = () => {
-    setShowNewMindMapDialog(true);
   };
 
   const handleConfirmNew = async (save: boolean, title?: string) => {
@@ -87,43 +69,47 @@ function App() {
     storage.clearCurrentMindMap();
   };
 
+  const cycleTheme = () => {
+    const idx = THEMES.indexOf(theme);
+    setTheme(THEMES[(idx + 1) % THEMES.length]);
+  };
+
   return (
-    <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="h-screen flex flex-col" style={{ background: 'var(--mm-bg)', color: 'var(--mm-node-text)' }}>
       <Toolbar
-        onOpen={handleOpen}
-        onSave={handleSave}
-        onNew={handleNew}
-        onHistory={handleHistory}
+        onOpen={() => setShowImportDialog(true)}
+        onSave={() => setShowExportDialog(true)}
+        onNew={() => setShowNewMindMapDialog(true)}
+        onHistory={() => setIsHistoryOpen(!isHistoryOpen)}
         onClear={handleClear}
-        isDarkMode={isDarkMode}
-        onToggleTheme={handleToggleTheme}
+        theme={theme}
+        onCycleTheme={cycleTheme}
+        layoutAlgorithm={layoutAlgorithm}
+        onLayoutChange={setLayoutAlgorithm}
       />
 
       {isHistoryOpen && (
         <HistoryPanel
           isOpen={isHistoryOpen}
-          onToggle={handleHistory}
+          onToggle={() => setIsHistoryOpen(false)}
           onImport={(importData) => {
             setData(importData);
             storage.saveCurrentMindMap(importData);
             setIsHistoryOpen(false);
           }}
-          isDarkMode={isDarkMode}
+          isDarkMode={theme === 'midnight'}
         />
       )}
 
       <div className="flex-1 relative overflow-hidden">
         <div className="absolute inset-0">
           {data && (
-            <MindMapEditor
-              data={data}
-              onAddChild={addChild}
-              onUpdateNode={updateNode}
-              onUpdateNodeData={updateNodeData}
-              onDeleteNode={deleteNode}
-              onToggleNodeExpanded={toggleNodeExpanded}
-              onUpdateBranchColor={updateBranchColor}
-            />
+            <ReactFlowProvider>
+              <MindMapEditor
+                data={data}
+                layoutAlgorithm={layoutAlgorithm}
+              />
+            </ReactFlowProvider>
           )}
         </div>
       </div>
@@ -145,23 +131,8 @@ function App() {
         onClose={() => setShowNewMindMapDialog(false)}
         onConfirm={handleConfirmNew}
       />
-
-      <div className="fixed bottom-4 right-4 text-sm text-gray-500 dark:text-gray-400">
-        {data && `节点数: ${countNodes(data.root)}`}
-      </div>
     </div>
   );
-}
-
-function countNodes(node: any): number {
-  if (!node) return 0;
-  let count = 1;
-  if (node.children) {
-    for (const child of node.children) {
-      count += countNodes(child);
-    }
-  }
-  return count;
 }
 
 export default App;
