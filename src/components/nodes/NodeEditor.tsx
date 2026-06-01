@@ -2,20 +2,27 @@ import { useRef, useEffect, useCallback } from 'react';
 
 interface NodeEditorProps {
   initialText: string;
+  initialChar?: string | null;
   level: number;
   onSave: (text: string) => void;
   onCancel: () => void;
 }
 
-export function NodeEditor({ initialText, level, onSave, onCancel }: NodeEditorProps) {
+export function NodeEditor({ initialText, initialChar, level, onSave, onCancel }: NodeEditorProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const isRoot = level === 0;
+
+  const effectiveInitial = initialChar ?? initialText;
 
   useEffect(() => {
     const input = inputRef.current;
     if (input) {
       input.focus();
-      input.select();
+      if (initialChar) {
+        input.setSelectionRange(input.value.length, input.value.length);
+      } else {
+        input.select();
+      }
     }
   }, []);
 
@@ -59,7 +66,7 @@ export function NodeEditor({ initialText, level, onSave, onCancel }: NodeEditorP
   return (
     <input
       ref={inputRef}
-      defaultValue={initialText}
+      defaultValue={effectiveInitial}
       onKeyDown={handleKeyDown}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}

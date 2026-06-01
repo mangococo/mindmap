@@ -10,12 +10,14 @@ import { NodeHandles } from './NodeHandles';
 function MindMapNodeComponent({ id, data, selected }: NodeProps<Node<MindMapNodeData>>) {
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [editInitialChar, setEditInitialChar] = useState<string | null>(null);
 
-  // Listen for edit-node event dispatched from ReactFlow's onNodeDoubleClick
+  // Listen for edit-node event dispatched from ReactFlow's onNodeDoubleClick or keyboard input
   useEffect(() => {
     const handleEditNode = (e: Event) => {
-      const { id: editId } = (e as CustomEvent).detail;
+      const { id: editId, initialChar } = (e as CustomEvent).detail;
       if (editId === id) {
+        setEditInitialChar(initialChar || null);
         setIsEditing(true);
       }
     };
@@ -73,6 +75,7 @@ function MindMapNodeComponent({ id, data, selected }: NodeProps<Node<MindMapNode
         {isEditing ? (
           <NodeEditor
             initialText={data.text}
+            initialChar={editInitialChar}
             level={data.level}
             onSave={handleSave}
             onCancel={handleCancel}

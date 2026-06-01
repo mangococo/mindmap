@@ -129,6 +129,12 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
         deleteNode(sid);
         setSelectedNodeId(null);
       }
+      if (sid && !e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
+        e.preventDefault();
+        document.dispatchEvent(
+          new CustomEvent('mindmap:edit-node', { detail: { id: sid, initialChar: e.key } }),
+        );
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -190,6 +196,7 @@ export const MindMapEditor: React.FC<MindMapEditorProps> = ({
         selectNodesOnDrag={false}
         nodesDraggable={false}
         nodesConnectable={false}
+        zoomOnDoubleClick={false}
         proOptions={{ hideAttribution: true }}
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="var(--mm-bg-pattern)" />
