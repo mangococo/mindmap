@@ -1,5 +1,5 @@
 import type { Node, Edge } from '@xyflow/react';
-import { Position } from '@xyflow/react';
+
 import type { MindMapNode } from '../types';
 import type { LayoutResult, MindMapNodeData } from './types';
 

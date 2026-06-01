@@ -50,37 +50,28 @@ export function NodeHandles({
       <Handle type="source" position={Position.Top} id="source-top" style={{ opacity: 0 }} />
       <Handle type="source" position={Position.Bottom} id="source-bottom" style={{ opacity: 0 }} />
 
-      {/* Expand/collapse button — only when selected and has children */}
-      {isSelected && hasChildren && (
-        <button
-          onClick={handleToggleClick}
-          className={`
-            absolute ${isLeft ? '-left-3' : '-right-3'} top-1/2 -translate-y-1/2
-            w-5 h-5 rounded-full flex items-center justify-center
-            text-white text-xs cursor-pointer border-none shadow-sm
-            transition-transform hover:scale-110
-            ${expanded ? 'bg-red-500' : 'bg-green-500'}
-          `}
-          title={expanded ? '收起子节点' : '展开子节点'}
-        >
-          {expanded ? '−' : '+'}
-        </button>
-      )}
-
-      {/* Add child button — only when selected */}
+      {/* Action buttons — stacked vertically on the node side */}
       {isSelected && (
-        <button
-          onClick={handleAddClick}
-          className={`
-            absolute ${isLeft ? '-left-3' : '-right-3'} top-0
-            w-5 h-5 rounded-full flex items-center justify-center
-            bg-blue-500 text-white text-xs cursor-pointer border-none shadow-sm
-            transition-transform hover:scale-110
-          `}
-          title="添加子节点"
+        <div
+          className={`absolute ${isLeft ? '-left-3' : '-right-3'} top-1/2 -translate-y-1/2 flex flex-col gap-1`}
         >
-          +
-        </button>
+          <button
+            onClick={handleAddClick}
+            className="w-5 h-5 rounded-full flex items-center justify-center bg-blue-500 text-white text-xs cursor-pointer border-none shadow-sm transition-transform hover:scale-110"
+            title="添加子节点"
+          >
+            +
+          </button>
+          {hasChildren && (
+            <button
+              onClick={handleToggleClick}
+              className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-xs cursor-pointer border-none shadow-sm transition-transform hover:scale-110 ${expanded ? 'bg-red-500' : 'bg-green-500'}`}
+              title={expanded ? '收起子节点' : '展开子节点'}
+            >
+              {expanded ? '−' : '+'}
+            </button>
+          )}
+        </div>
       )}
     </>
   );
