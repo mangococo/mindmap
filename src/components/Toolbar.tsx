@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { FolderOpen, Save, History, Trash2, Plus, LayoutGrid, Palette, Maximize } from 'lucide-react';
 import type { LayoutAlgorithm } from '../lib/layout/types';
 
@@ -6,6 +6,10 @@ const THEMES = ['classic', 'ocean', 'forest', 'sunset', 'midnight', 'minimal'] a
 const THEME_LABELS: Record<string, string> = {
   classic: '经典', ocean: '海洋', forest: '森林',
   sunset: '日落', midnight: '暗夜', minimal: '极简',
+};
+const THEME_PREVIEW_COLORS: Record<string, string> = {
+  classic: '#3B82F6', ocean: '#0284C7', forest: '#16A34A',
+  sunset: '#EA580C', midnight: '#6366F1', minimal: '#111827',
 };
 const LAYOUT_LABELS: Record<LayoutAlgorithm, string> = {
   horizontal: '向右树形',
@@ -20,7 +24,7 @@ interface ToolbarProps {
   onHistory: () => void;
   onClear: () => void;
   theme: string;
-  onCycleTheme: () => void;
+  onSetTheme: (theme: string) => void;
   layoutAlgorithm: LayoutAlgorithm;
   onLayoutChange: (layout: LayoutAlgorithm) => void;
   onZenMode?: () => void;
@@ -28,15 +32,27 @@ interface ToolbarProps {
 
 export const Toolbar: React.FC<ToolbarProps> = ({
   onOpen, onSave, onNew, onHistory, onClear,
-  theme, onCycleTheme,
+  theme, onSetTheme,
   layoutAlgorithm, onLayoutChange,
   onZenMode,
 }) => {
   const [showLayoutMenu, setShowLayoutMenu] = React.useState(false);
   const [showThemeMenu, setShowThemeMenu] = React.useState(false);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (toolbarRef.current && !toolbarRef.current.contains(e.target as Node)) {
+        setShowLayoutMenu(false);
+        setShowThemeMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
-    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-[calc(100vw-2rem)] rounded-2xl"
+    <div ref={toolbarRef} className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-[calc(100vw-2rem)] rounded-2xl"
       style={{ background: 'var(--mm-toolbar-bg)', backdropFilter: 'blur(12px)', border: '1px solid var(--mm-node-border)' }}
     >
       <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-2xl shadow-lg">
@@ -75,9 +91,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               style={{ background: 'var(--mm-toolbar-bg)', backdropFilter: 'blur(12px)', border: '1px solid var(--mm-node-border)' }}
             >
               {THEMES.map(t => (
-                <button key={t} onClick={() => { onCycleTheme(); setShowThemeMenu(false); }}
+                <button key={t} onClick={() => { onSetTheme(t); setShowThemeMenu(false); }}
                   className={`w-7 h-7 rounded-full border-2 transition-transform hover:scale-110 ${theme === t ? 'border-blue-400 scale-110' : 'border-transparent'}`}
-                  style={{ background: `var(--mm-root-bg)` }}
+                  style={{ background: THEME_PREVIEW_COLORS[t] }}
                   title={THEME_LABELS[t]}
                   data-theme-preview={t}
                 />

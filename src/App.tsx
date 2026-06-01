@@ -95,7 +95,7 @@ function App() {
           onHistory={() => setIsHistoryOpen(!isHistoryOpen)}
           onClear={handleClear}
           theme={theme}
-          onCycleTheme={cycleTheme}
+          onSetTheme={setTheme}
           layoutAlgorithm={layoutAlgorithm}
           onLayoutChange={setLayoutAlgorithm}
           onZenMode={() => setZenMode(true)}
@@ -111,7 +111,6 @@ function App() {
             storage.saveCurrentMindMap(importData);
             setIsHistoryOpen(false);
           }}
-          isDarkMode={theme === 'midnight'}
         />
       )}
 

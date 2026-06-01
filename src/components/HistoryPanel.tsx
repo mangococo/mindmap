@@ -6,14 +6,12 @@ interface HistoryPanelProps {
   isOpen: boolean;
   onToggle: () => void;
   onImport: (data: any) => void;
-  isDarkMode: boolean;
 }
 
 export const HistoryPanel: React.FC<HistoryPanelProps> = ({
   isOpen,
   onToggle,
   onImport,
-  isDarkMode,
 }) => {
   const [history, setHistory] = useState<MindMapHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,18 +84,17 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
         onClick={onToggle}
         className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50 p-3 rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         style={{
-          backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: 'var(--mm-toolbar-bg)',
           backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: isDarkMode ? '1px solid rgba(55, 65, 81, 0.5)' : '1px solid rgba(229, 231, 235, 0.8)',
+          border: '1px solid var(--mm-node-border)',
         }}
         title={isOpen ? '收起历史记录' : '展开历史记录'}
         aria-label={isOpen ? '收起历史记录' : '展开历史记录'}
       >
         {isOpen ? (
-          <ChevronLeft size={20} className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} />
+          <ChevronLeft size={20} style={{ color: 'var(--mm-node-text)' }} />
         ) : (
-          <ChevronRight size={20} className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} />
+          <ChevronRight size={20} style={{ color: 'var(--mm-node-text)' }} />
         )}
       </button>
 
@@ -113,35 +110,34 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
         <div
           className="h-full w-full overflow-y-auto py-4 pr-4"
           style={{
-            backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: 'var(--mm-toolbar-bg)',
             backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            borderRight: isDarkMode ? '1px solid rgba(55, 65, 81, 0.5)' : '1px solid rgba(229, 231, 235, 0.8)',
+            borderRight: '1px solid var(--mm-node-border)',
             boxShadow: '4px 0 24px rgba(0, 0, 0, 0.08)',
           }}
         >
           <div className="px-4 mb-4">
-            <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: isDarkMode ? '#E5E7EB' : '#1F2937' }}>
+            <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--mm-node-text)' }}>
               <Clock size={20} />
               历史记录
             </h2>
-            <p className="text-xs mt-1" style={{ color: isDarkMode ? '#9CA3AF' : '#6B7280' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--mm-edge)' }}>
               点击加载思维导图
             </p>
           </div>
 
           {loading ? (
             <div className="px-4 py-8 text-center">
-              <div className="inline-block w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: isDarkMode ? '#3B82F6' : '#2563EB', borderTopColor: 'transparent' }}></div>
-              <p className="mt-3 text-sm" style={{ color: isDarkMode ? '#9CA3AF' : '#6B7280' }}>加载中...</p>
+              <div className="inline-block w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--mm-selection)', borderTopColor: 'transparent' }}></div>
+              <p className="mt-3 text-sm" style={{ color: 'var(--mm-edge)' }}>加载中...</p>
             </div>
           ) : history.length === 0 ? (
             <div className="px-4 py-12 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style={{ backgroundColor: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(37, 99, 235, 0.1)' }}>
-                <FileText size={32} style={{ color: isDarkMode ? '#60A5FA' : '#3B82F6' }} />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style={{ backgroundColor: 'color-mix(in srgb, var(--mm-selection) 10%, transparent)' }}>
+                <FileText size={32} style={{ color: 'var(--mm-selection)' }} />
               </div>
-              <p className="text-sm font-medium mb-1" style={{ color: isDarkMode ? '#E5E7EB' : '#1F2937' }}>暂无历史记录</p>
-              <p className="text-xs" style={{ color: isDarkMode ? '#9CA3AF' : '#6B7280' }}>保存的思维导图将显示在这里</p>
+              <p className="text-sm font-medium mb-1" style={{ color: 'var(--mm-node-text)' }}>暂无历史记录</p>
+              <p className="text-xs" style={{ color: 'var(--mm-edge)' }}>保存的思维导图将显示在这里</p>
             </div>
           ) : (
             <ul className="space-y-2 px-4">
@@ -154,21 +150,13 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                   className="relative group rounded-xl p-4 cursor-pointer transition-all duration-200"
                   style={{
                     backgroundColor: hoveredItem === item.id
-                      ? isDarkMode
-                        ? 'rgba(59, 130, 246, 0.15)'
-                        : 'rgba(37, 99, 235, 0.08)'
-                      : isDarkMode
-                        ? 'rgba(75, 85, 99, 0.3)'
-                        : 'rgba(243, 244, 246, 0.8)',
+                      ? 'color-mix(in srgb, var(--mm-selection) 15%, transparent)'
+                      : 'color-mix(in srgb, var(--mm-node-border) 30%, transparent)',
                     border: hoveredItem === item.id
-                      ? `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.4)' : 'rgba(37, 99, 235, 0.3)'}`
-                      : isDarkMode
-                        ? '1px solid rgba(75, 85, 99, 0.3)'
-                        : '1px solid rgba(229, 231, 235, 0.8)',
+                      ? '1px solid color-mix(in srgb, var(--mm-selection) 40%, transparent)'
+                      : '1px solid color-mix(in srgb, var(--mm-node-border) 50%, transparent)',
                     boxShadow: hoveredItem === item.id
-                      ? isDarkMode
-                        ? '0 4px 12px rgba(0, 0, 0, 0.3)'
-                        : '0 4px 12px rgba(0, 0, 0, 0.08)'
+                      ? '0 4px 12px rgba(0, 0, 0, 0.08)'
                       : 'none',
                   }}
                 >
@@ -178,19 +166,19 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                       hoveredItem === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
                     }`}
                     style={{
-                      backgroundColor: isDarkMode ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)',
+                      backgroundColor: 'rgba(239, 68, 68, 0.15)',
                     }}
                     title="删除"
                     aria-label="删除历史记录项"
                   >
-                    <Trash2 size={16} className={isDarkMode ? 'text-red-400' : 'text-red-500'} />
+                    <Trash2 size={16} className="text-red-400" />
                   </button>
 
-                  <h3 className="text-sm font-semibold mb-2 pr-6 truncate" style={{ color: isDarkMode ? '#E5E7EB' : '#1F2937' }}>
+                  <h3 className="text-sm font-semibold mb-2 pr-6 truncate" style={{ color: 'var(--mm-node-text)' }}>
                     {item.title || '未命名画布'}
                   </h3>
 
-                  <div className="flex items-center gap-1.5 text-xs" style={{ color: isDarkMode ? '#9CA3AF' : '#6B7280' }}>
+                  <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--mm-edge)' }}>
                     <Clock size={12} />
                     <span>{formatTimestamp(item.timestamp)}</span>
                     <span className="text-[10px] opacity-60 ml-1">
@@ -203,7 +191,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                       hoveredItem === item.id ? 'opacity-100' : 'opacity-0'
                     }`}
                     style={{
-                      backgroundColor: isDarkMode ? '#3B82F6' : '#2563EB',
+                      backgroundColor: 'var(--mm-selection)',
                     }}
                   />
                 </li>
