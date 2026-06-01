@@ -55,22 +55,17 @@ npm run dev
 npm run build
 ```
 
-构建产物将输出到 `dist/` 目录
+构建产物输出到 `dist/` 目录，包含 `index.html` 和 `assets/` 资源目录。
 
 ### 构建独立 HTML 文件
 
-项目内置 `vite-plugin-singlefile` 插件，构建产物自动内联所有 CSS 和 JavaScript 到单个 HTML 文件：
+如需生成单个可离线使用的 HTML 文件，使用：
 
 ```bash
-npm run build
+npm run build:single
 ```
 
-生成的 `dist/index.html`（约 780KB）可直接在浏览器中打开使用，无需服务器。
-
-- 所有 CSS 和 JavaScript 已内联
-- 无外部资源依赖
-- 可离线使用
-- 支持全部功能
+该命令通过 `vite-plugin-singlefile` 将所有 CSS 和 JavaScript 内联到 `dist/index.html` 中，可直接在浏览器中打开，无需服务器。
 
 ## 使用指南
 
