@@ -53,7 +53,7 @@ export function NodeHandles({
       {/* Action buttons — stacked vertically on the node side */}
       {isSelected && (
         <div
-          className={`absolute ${isLeft ? '-left-3' : '-right-3'} top-1/2 -translate-y-1/2 flex flex-col gap-1`}
+          className={`absolute ${isLeft ? '-left-3' : '-right-3'} top-1/2 -translate-y-1/2 flex flex-col gap-2`}
         >
           <button
             onClick={handleAddClick}
