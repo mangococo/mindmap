@@ -41,14 +41,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const toolbarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: Event) => {
       if (toolbarRef.current && !toolbarRef.current.contains(e.target as Node)) {
         setShowLayoutMenu(false);
         setShowThemeMenu(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside, true);
+    return () => document.removeEventListener('pointerdown', handleClickOutside, true);
   }, []);
 
   return (
