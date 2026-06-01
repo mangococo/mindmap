@@ -70,11 +70,6 @@ function App() {
     storage.clearCurrentMindMap();
   };
 
-  const cycleTheme = () => {
-    const idx = THEMES.indexOf(theme);
-    setTheme(THEMES[(idx + 1) % THEMES.length]);
-  };
-
   // Esc to exit ZEN mode
   useEffect(() => {
     if (!zenMode) return;

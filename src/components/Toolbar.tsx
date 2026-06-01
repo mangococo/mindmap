@@ -24,7 +24,7 @@ interface ToolbarProps {
   onHistory: () => void;
   onClear: () => void;
   theme: string;
-  onSetTheme: (theme: string) => void;
+  onSetTheme: (theme: typeof THEMES[number]) => void;
   layoutAlgorithm: LayoutAlgorithm;
   onLayoutChange: (layout: LayoutAlgorithm) => void;
   onZenMode?: () => void;
