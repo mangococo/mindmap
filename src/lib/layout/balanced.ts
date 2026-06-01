@@ -77,6 +77,7 @@ function layoutSubtree(
       branchColor: ownBranchColor,
       hasChildren: !!(node.children && node.children.length > 0),
       expanded: node.expanded !== false,
+      direction,
     },
   });
 
@@ -116,6 +117,8 @@ function layoutSubtree(
       id: `${node.id}-${child.id}`,
       source: node.id,
       target: child.id,
+      sourceHandle: direction === -1 ? 'source-left' : 'source-right',
+      targetHandle: direction === -1 ? 'target-right' : 'target-left',
       type: 'bezier',
       data: { color: edgeColor },
     });
@@ -208,6 +211,8 @@ export function balancedLayout(
       id: `${root.id}-${child.id}`,
       source: root.id,
       target: child.id,
+      sourceHandle: 'source-right',
+      targetHandle: 'target-left',
       type: 'bezier',
       data: { color: edgeColor },
     });
@@ -241,6 +246,8 @@ export function balancedLayout(
       id: `${root.id}-${child.id}`,
       source: root.id,
       target: child.id,
+      sourceHandle: 'source-left',
+      targetHandle: 'target-right',
       type: 'bezier',
       data: { color: edgeColor },
     });

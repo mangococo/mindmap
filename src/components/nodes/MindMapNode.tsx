@@ -93,6 +93,7 @@ function MindMapNodeComponent({ id, data, selected }: NodeProps<Node<MindMapNode
         hasChildren={data.hasChildren}
         expanded={data.expanded}
         isSelected={!!selected}
+        direction={data.direction}
         onToggleExpand={handleToggleExpand}
         onAddChild={handleAddChild}
       />

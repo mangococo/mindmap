@@ -1,4 +1,5 @@
 import type { Node, Edge } from '@xyflow/react';
+import { Position } from '@xyflow/react';
 import type { MindMapNode } from '../types';
 import type { LayoutResult, MindMapNodeData } from './types';
 
@@ -12,6 +13,16 @@ const DEFAULT_BRANCH_COLORS = [
   '#EC4899',
   '#14B8A6',
 ];
+
+/** Pick the handle position (top/right/bottom/left) closest to the given angle. */
+function handleIdFromAngle(angle: number, prefix: 'source' | 'target'): string {
+  // Normalize to [0, 2π)
+  const a = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  if (a < Math.PI / 4 || a >= 7 * Math.PI / 4) return `${prefix}-right`;
+  if (a < 3 * Math.PI / 4) return `${prefix}-bottom`;
+  if (a < 5 * Math.PI / 4) return `${prefix}-left`;
+  return `${prefix}-top`;
+}
 
 interface RadialSubtree {
   node: MindMapNode;
@@ -81,6 +92,7 @@ function layoutRadialSubtree(
     const childAngleSpan = usableSpan / totalChildren;
     const childStart = currentAngle;
     const childEnd = currentAngle + childAngleSpan;
+    const childMidAngle = (childStart + childEnd) / 2;
 
     const edgeColor =
       child.style?.branchStyle?.lineColor ??
@@ -104,10 +116,16 @@ function layoutRadialSubtree(
       edges,
     );
 
+    // Source handle faces the child's direction; target handle faces back to parent
+    const sourceAngle = childMidAngle;
+    const targetAngle = childMidAngle + Math.PI;
+
     edges.push({
       id: `${node.id}-${child.id}`,
       source: node.id,
       target: child.id,
+      sourceHandle: handleIdFromAngle(sourceAngle, 'source'),
+      targetHandle: handleIdFromAngle(targetAngle, 'target'),
       type: 'bezier',
       data: { color: edgeColor },
     });

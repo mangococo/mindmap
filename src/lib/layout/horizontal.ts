@@ -112,6 +112,8 @@ function layoutNode(
       id: `${node.id}-${child.id}`,
       source: node.id,
       target: child.id,
+      sourceHandle: 'source-right',
+      targetHandle: 'target-left',
       type: 'bezier',
       data: { color: edgeColor },
     });

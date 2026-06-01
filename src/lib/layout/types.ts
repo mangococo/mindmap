@@ -18,6 +18,8 @@ export interface MindMapNodeData {
   branchColor?: string;
   hasChildren: boolean;
   expanded: boolean;
+  /** Balanced layout direction: 1 = right side, -1 = left side. Undefined for other layouts. */
+  direction?: 1 | -1;
 }
 
 // Configuration for the layout computation
