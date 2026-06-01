@@ -213,20 +213,6 @@ JSON Canvas 是 Obsidian Canvas 使用的格式：
 }
 ```
 
-## 开发计划
-
-- [x] 项目初始化
-- [x] 基础编辑器实现
-- [x] XMind 导入/导出
-- [x] FreeMind 导入
-- [x] JSON Canvas 导出
-- [x] Markdown 导出
-- [x] UI/UX 优化
-- [x] 主题切换
-- [ ] 性能优化
-- [ ] 单元测试
-- [ ] 更多格式支持
-
 ## 许可证
 
 MIT
