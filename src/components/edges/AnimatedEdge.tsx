@@ -3,7 +3,7 @@ import { getBezierPath, type EdgeProps, type Edge } from '@xyflow/react';
 import { motion } from 'framer-motion';
 
 type EdgeData = Record<string, unknown> & {
-  branchColor?: string;
+  color?: string;
 };
 
 const AnimatedEdge = memo(
@@ -28,7 +28,7 @@ const AnimatedEdge = memo(
     });
 
     const edgeData = data as EdgeData | undefined;
-    const strokeColor = edgeData?.branchColor || 'var(--mm-edge, #94a3b8)';
+    const strokeColor = edgeData?.color || 'var(--mm-edge, #94a3b8)';
 
     return (
       <g>
