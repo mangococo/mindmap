@@ -24,10 +24,12 @@
 
 ## 技术栈
 
-- **框架**: React 18 + TypeScript
-- **构建工具**: Vite 5
+- **框架**: React 19 + TypeScript
+- **构建工具**: Vite 7
 - **样式**: Tailwind CSS
-- **思维导图**: @ant-design/graphs
+- **流程图引擎**: @xyflow/react
+- **动画**: Framer Motion
+- **图标**: Lucide React
 - **文件处理**: JSZip, fast-xml-parser, file-saver
 - **状态管理**: Zustand
 
@@ -57,45 +59,18 @@ npm run build
 
 ### 构建独立 HTML 文件
 
-如果需要将应用打包为一个独立的 HTML 文件（包含所有资源），可以手动创建：
+项目内置 `vite-plugin-singlefile` 插件，构建产物自动内联所有 CSS 和 JavaScript 到单个 HTML 文件：
 
 ```bash
-# 1. 先构建生产版本
 npm run build
-
-# 2. 创建独立的 HTML 文件
-cat << 'EOF' > standalone.html
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>思维导图编辑器</title>
-    <style>
-EOF
-cat dist/assets/index-*.css >> standalone.html
-cat << 'EOF' >> standalone.html
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module">
-EOF
-cat dist/assets/index-*.js >> standalone.html
-cat << 'EOF' >> standalone.html
-    </script>
-  </body>
-</html>
-EOF
 ```
 
-生成的 `standalone.html` 文件（约 460KB）包含所有功能，可直接在浏览器中打开使用，无需服务器或网络连接。
+生成的 `dist/index.html`（约 780KB）可直接在浏览器中打开使用，无需服务器。
 
-**特性：**
-- ✅ 所有 CSS 和 JavaScript 已内联
-- ✅ 无外部资源依赖
-- ✅ 可离线使用
-- ✅ 支持所有功能（思维导图编辑、导入/导出、主题切换等）
+- 所有 CSS 和 JavaScript 已内联
+- 无外部资源依赖
+- 可离线使用
+- 支持全部功能
 
 ## 使用指南
 
@@ -145,25 +120,46 @@ EOF
 
 ```
 src/
-├── components/         # React 组件
-│   ├── MindMapEditor.tsx    # 思维导图编辑器
-│   ├── Toolbar.tsx            # 工具栏
-│   ├── ImportDialog.tsx       # 导入对话框
-│   └── ExportDialog.tsx       # 导出对话框
+├── components/
+│   ├── ContextToolbar.tsx      # 右键/上下文工具栏
+│   ├── ExportDialog.tsx        # 导出对话框
+│   ├── HistoryPanel.tsx        # 历史记录面板
+│   ├── ImportDialog.tsx        # 导入对话框
+│   ├── MindMapEditor.tsx       # 思维导图编辑器主组件
+│   ├── NewMindMapDialog.tsx    # 新建导图对话框
+│   ├── Toolbar.tsx             # 顶部工具栏
+│   ├── edges/
+│   │   └── AnimatedEdge.tsx    # 动画边
+│   └── nodes/
+│       ├── MindMapNode.tsx     # 节点主组件
+│       ├── NodeContent.tsx     # 节点内容渲染
+│       ├── NodeEditor.tsx      # 节点文本编辑
+│       ├── NodeHandles.tsx     # 节点连接手柄
+│       └── NodeShape.tsx       # 节点形状
 ├── lib/
-│   ├── parsers/               # 文件解析器
-│   │   ├── xmind.ts         # XMind 解析
-│   │   └── freemind.ts      # FreeMind 解析
-│   ├── exporters/             # 文件导出器
-│   │   ├── xmind.ts         # XMind 导出
-│   │   ├── jsonCanvas.ts     # JSON Canvas 导出
-│   │   └── markdown.ts      # Markdown 导出
-│   ├── types.ts               # TypeScript 类型定义
-│   └── utils.ts              # 工具函数
+│   ├── exporters/
+│   │   ├── jsonCanvas.ts      # JSON Canvas 导出
+│   │   ├── markdown.ts        # Markdown 导出
+│   │   └── xmind.ts           # XMind 导出
+│   ├── layout/
+│   │   ├── balanced.ts        # 平衡布局
+│   │   ├── horizontal.ts      # 水平布局
+│   │   ├── radial.ts          # 径向布局
+│   │   ├── index.ts           # 布局入口
+│   │   └── types.ts           # 布局类型
+│   ├── parsers/
+│   │   ├── freemind.ts        # FreeMind 解析
+│   │   └── xmind.ts           # XMind 解析
+│   ├── storage.ts             # 本地存储
+│   ├── types.ts               # TypeScript 类型
+│   └── utils.ts               # 工具函数
 ├── store/
-│   └── mindmapStore.ts       # Zustand 状态管理
-├── App.tsx                  # 主应用组件
-└── main.tsx                 # 应用入口
+│   └── mindmapStore.ts        # Zustand 状态管理
+├── styles/
+│   └── themes.css             # 主题样式
+├── App.tsx                    # 主应用组件
+├── index.css                  # 全局样式
+└── main.tsx                   # 应用入口
 ```
 
 ## 文件格式说明
