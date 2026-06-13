@@ -2,6 +2,8 @@
 
 一个美观的纯前端思维导图编辑器，支持多种文件格式的导入和导出。
 
+**在线体验：** [https://mangococo.github.io/mindmap/](https://mangococo.github.io/mindmap/)
+
 ## 功能特性
 
 ### 核心功能
